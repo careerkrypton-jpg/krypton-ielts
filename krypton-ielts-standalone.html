@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krypton IELTS | 1-100 Free Mock Tests & AI Analyzer | Kathmandu Krypton Educational Consultancy</title>
+  <link rel="icon" type="image/svg+xml" href="public/favicon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            krypton: {
+              navy: '#173F7A',
+              blue: '#2051BD',
+              red: '#DC2626',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-report, #printable-report * { visibility: visible; }
+      #printable-report { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-red-500 selection:text-white">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // IELTS Official Rounding Algorithm
+    function calculateOverallBand(scores) {
+      if (!scores || scores.length === 0) return 0;
+      const valid = scores.filter(s => s > 0);
+      if (valid.length === 0) return 0;
+      const avg = valid.reduce((a, b) => a + b, 0) / valid.length;
+      const floor = Math.floor(avg);
+      const rem = avg - floor;
+      if (rem < 0.25) return floor;
+      if (rem < 0.75) return floor + 0.5;
+      return floor + 1.0;
+    }
+
+    function calculateReadingBand(raw) {
+      if (raw >= 39) return 9.0;
+      if (raw >= 37) return 8.5;
+      if (raw >= 35) return 8.0;
+      if (raw >= 33) return 7.5;
+      if (raw >= 30) return 7.0;
+      if (raw >= 27) return 6.5;
+      if (raw >= 23) return 6.0;
+      if (raw >= 19) return 5.5;
+      if (raw >= 15) return 5.0;
+      if (raw >= 13) return 4.5;
+      if (raw >= 10) return 4.0;
+      return 3.5;
+    }
+
+    // Audio chime generator
+    function playChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.85);
+      } catch (e) {}
+    }
+
+    // Generate 100 mock test metadata including Barron's & Cambridge
+    const TEST_CATALOG = Array.from({ length: 100 }, (_, i) => {
+      const id = i + 1;
+      const padded = String(id).padStart(3, '0');
+      const sources = ['Barron\'s Official', 'Cambridge 19', 'Cambridge 18', 'Cambridge 17', 'British Council Official', 'IDP Official Exam', 'Recent Actual 2025'];
+      const topics = [
+        ['Odonata (Dragonflies)', 'History of Fire Fighting', 'The Luddites'],
+        ['Vikings Wayfaring Ways', 'Dyslexia Neuroscience', 'Catastrophe Theory'],
+        ['Urban Design & Dance', 'De-extinction Genetics', 'Psychology of Humour'],
+        ['The CT Scanner', 'Nineteenth-Century Paperbacks', 'Cosmic Black Holes'],
+        ['Gulf Stream & Climate', 'Chocolate: Food of Gods', 'Corvid Bird Intelligence'],
+        ['Candle Making in America', 'Caffeine Biology', 'Animal Camouflage'],
+        ['Pollination Ecology', 'Paleolithic Cave Art', 'The Braille System']
+      ];
+      return {
+        id,
+        code: `MOCK-${padded}`,
+        title: `Krypton Full Mock Test ${padded} - ${sources[(id - 1) % sources.length]}`,
+        source: sources[(id - 1) % sources.length],
+        format: id % 5 === 0 ? 'General Training' : 'Academic',
+        difficulty: id <= 35 ? 'Standard (Band 6.0-7.0)' : id <= 75 ? 'Challenging (Band 7.0-8.0)' : 'Mastery (Band 8.0-9.0)',
+        topics: topics[(id - 1) % topics.length]
+      };
+    });
+
+    const BARRON_TEST_1_PASSAGE = {
+      title: "Odonata (Dragonflies & Damselflies)",
+      subheading: "An anatomical and evolutionary examination of nature's ancient aerial predators.",
+      paragraphs: [
+        { label: "A", text: "Odonata is the order of insects that includes dragonflies and damselflies. To the human eye, their shining colors and delicate-looking wings make them beautiful creatures to behold. In the natural world, however, they are fearsome predators. Dragonflies and damselflies get their name from the powerful serrated jaws they use to tear apart their prey. The word odonata means 'toothed jaw'." },
+        { label: "B", text: "Dragonflies and damselflies are often confused with each other because they are very similar. Close observation reveals the differences between them. The most obvious difference is the way they hold their wings while at rest. Dragonflies hold their wings out to the side while damselflies fold their wings back. Dragonflies have very large eyes that seem to cover the entire face because they touch each other. Damselflies' eyes are smaller, and there is a space between them. Dragonflies are larger and stronger and fly longer distances into woods and fields." },
+        { label: "C", text: "The largest odonata living today are the Hawaiian endemic dragonfly and Central American damselfly, each with a wingspan of 19 centimeters. Fossils prove dragonflies have existed for over 300 million years. The largest fossil ever found belongs to meganeura monyi with a wingspan of 75 centimeters." },
+        { label: "D", text: "Both lay eggs on or just below the surface of water. The babies emerge as nymphs, living underwater, breathing through gills, preying on water insects and tadpoles with a special extendable lip." }
+      ]
+    };
+
+    const BARRON_TEST_1_QUESTIONS = [
+      { id: 'q1', num: 1, type: 'Fact', q: 'They have sawlike jaws.', options: ['A) dragonflies only', 'B) damselflies only', 'C) both dragonflies and damselflies'], correct: 'C) both dragonflies and damselflies', explanation: 'Paragraph A confirms both have serrated sawlike jaws.' },
+      { id: 'q2', num: 2, type: 'Fact', q: 'They hold their wings on their backs while resting.', options: ['A) dragonflies only', 'B) damselflies only', 'C) both dragonflies and damselflies'], correct: 'B) damselflies only', explanation: 'Paragraph B states damselflies fold wings back.' },
+      { id: 'q3', num: 3, type: 'Fact', q: 'Their eyes have a gap between them.', options: ['A) dragonflies only', 'B) damselflies only', 'C) both dragonflies and damselflies'], correct: 'B) damselflies only', explanation: 'Paragraph B states damselflies have a space between eyes.' },
+      { id: 'q4', num: 4, type: 'Fact', q: 'They can be seen in fields at a distance from ponds and streams.', options: ['A) dragonflies only', 'B) damselflies only', 'C) both dragonflies and damselflies'], correct: 'A) dragonflies only', explanation: 'Paragraph B confirms dragonflies fly away from water into woods and fields.' },
+      { id: 'q5', num: 5, type: 'Completion', q: 'Baby dragonflies and damselflies emerge as underwater ________.', options: ['nymphs', 'tadpoles', 'larvae'], correct: 'nymphs', explanation: 'Paragraph D notes babies emerge as nymphs.' }
+    ];
+
+    function App() {
+      const [isAuthenticated, setIsAuthenticated] = useState(true);
+      const [student, setStudent] = useState({
+        name: 'Vibe Coder',
+        email: 'vibecoder@krypton.edu.np',
+        candidateNumber: 'NP-KTM-084219',
+        targetBand: 7.5
+      });
+      const [view, setView] = useState('dashboard');
+      const [moduleFilter, setModuleFilter] = useState('full-mock');
+      const [currentTest, setCurrentTest] = useState(TEST_CATALOG[0]);
+      const [answers, setAnswers] = useState({});
+      const [testResult, setTestResult] = useState(null);
+      const [showCalcModal, setShowCalcModal] = useState(false);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [activeModuleInExam, setActiveModuleInExam] = useState('reading');
+
+      const startTest = (test, mod) => {
+        setCurrentTest(test);
+        setActiveModuleInExam(mod === 'full-mock' ? 'reading' : mod);
+        setAnswers({});
+        setView('exam');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const submitExam = () => {
+        let correct = 0;
+        BARRON_TEST_1_QUESTIONS.forEach(q => {
+          if (answers[q.id] === q.correct || (answers[q.id] && answers[q.id].startsWith(q.correct.charAt(0)))) {
+            correct++;
+          }
+        });
+        const band = calculateReadingBand(correct * 8);
+        setTestResult({
+          band,
+          rawScore: correct,
+          total: BARRON_TEST_1_QUESTIONS.length,
+          date: new Date().toLocaleDateString(),
+          testTitle: currentTest.title,
+        });
+        setView('result');
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+          {/* Header */}
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+              <div onClick={() => setView('dashboard')} className="flex items-center gap-3 cursor-pointer">
+                <img 
+                  src="public/krypton-logo.jpg" 
+                  alt="Kathmandu Krypton" 
+                  className="h-10 sm:h-12 object-contain"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div className="border-l border-slate-200 pl-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base sm:text-lg font-extrabold text-[#173F7A]">IELTS</span>
+                    <span className="text-base sm:text-lg font-black text-[#DC2626]">Mock Tests</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">FREE FOR EVERY STUDENT</span>
+                </div>
+              </div>
+
+              {/* Segmented nav pills from Image 2 */}
+              <nav className="hidden md:flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold gap-1">
+                <button onClick={() => setView('dashboard')} className={`px-4 py-2 rounded-xl transition ${view === 'dashboard' ? 'bg-[#EBF2FE] text-[#2563EB]' : 'text-slate-600'}`}>
+                  Dashboard
+                </button>
+                <button onClick={() => { setModuleFilter('listening'); setView('test-bank'); }} className={`px-4 py-2 rounded-xl transition ${view === 'test-bank' && moduleFilter === 'listening' ? 'bg-[#EBF2FE] text-[#2563EB]' : 'text-slate-600'}`}>
+                  Listening
+                </button>
+                <button onClick={() => { setModuleFilter('reading'); setView('test-bank'); }} className={`px-4 py-2 rounded-xl transition ${view === 'test-bank' && moduleFilter === 'reading' ? 'bg-[#EBF2FE] text-[#2563EB]' : 'text-slate-600'}`}>
+                  Reading
+                </button>
+                <button onClick={() => { setModuleFilter('writing'); setView('test-bank'); }} className={`px-4 py-2 rounded-xl transition ${view === 'test-bank' && moduleFilter === 'writing' ? 'bg-[#EBF2FE] text-[#2563EB]' : 'text-slate-600'}`}>
+                  Writing
+                </button>
+                <button onClick={() => { setModuleFilter('speaking'); setView('test-bank'); }} className={`px-4 py-2 rounded-xl transition ${view === 'test-bank' && moduleFilter === 'speaking' ? 'bg-[#EBF2FE] text-[#2563EB]' : 'text-slate-600'}`}>
+                  Speaking
+                </button>
+              </nav>
+
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-full bg-[#2051BD] text-white font-black text-xs flex items-center justify-center">
+                  VC
+                </div>
+                <span className="text-xs font-bold text-slate-800 hidden sm:inline">{student.name}</span>
+              </div>
+            </div>
+          </header>
+
+          {/* VIEW: DASHBOARD (Exact Match to Image 2) */}
+          {view === 'dashboard' && (
+            <div className="max-w-7xl mx-auto px-4 py-8 space-y-7 flex-1">
+              {/* Hero Banner with Grid Pattern */}
+              <div 
+                className="rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 border border-blue-900/60"
+                style={{
+                  backgroundColor: '#071746',
+                  backgroundImage: `linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+                  backgroundSize: '24px 24px'
+                }}
+              >
+                <div className="space-y-2 max-w-xl">
+                  <div className="text-xs sm:text-sm text-blue-200 font-medium">Welcome back,</div>
+                  <h1 className="text-3xl sm:text-4xl font-extrabold text-white">{student.name}</h1>
+                  <p className="text-blue-100/90 text-xs sm:text-sm">
+                    Take a full test in each skill to see your estimated overall IELTS band.
+                  </p>
+                  <div className="pt-3">
+                    <button 
+                      onClick={() => startTest(TEST_CATALOG[0], 'reading')} 
+                      className="bg-[#DC2626] hover:bg-red-700 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-2xl shadow-lg transition"
+                    >
+                      Continue practising →
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-[#10245C]/80 backdrop-blur-md rounded-2xl p-5 border border-white/10 min-w-[240px] text-center">
+                  <span className="text-[11px] font-bold uppercase text-slate-300">ESTIMATED OVERALL</span>
+                  <div className="text-5xl font-black text-white font-mono my-1">—</div>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs font-mono font-bold text-blue-200 pt-2 border-t border-white/10">
+                    <div className="text-left">L &nbsp; <span className="text-white">—</span></div>
+                    <div className="text-left">R &nbsp; <span className="text-white">—</span></div>
+                    <div className="text-left">W &nbsp; <span className="text-white">—</span></div>
+                    <div className="text-left">S &nbsp; <span className="text-white">—</span></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3 Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="bg-white rounded-3xl p-6 border border-slate-200 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl border border-red-200 bg-red-50 text-red-500 flex items-center justify-center font-bold text-xl">🏆</div>
+                  <div>
+                    <div className="text-3xl font-extrabold text-slate-900 font-mono">0</div>
+                    <div className="text-xs font-semibold text-slate-500">Tests taken</div>
+                  </div>
+                </div>
+                <div className="bg-white rounded-3xl p-6 border border-slate-200 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl border border-red-200 bg-red-50 text-red-500 flex items-center justify-center font-bold text-xl">⏱️</div>
+                  <div>
+                    <div className="text-3xl font-extrabold text-slate-900 font-mono">0</div>
+                    <div className="text-xs font-semibold text-slate-500">Minutes practised</div>
+                  </div>
+                </div>
+                <div className="bg-white rounded-3xl p-6 border border-slate-200 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl border border-red-200 bg-red-50 text-red-500 flex items-center justify-center font-bold text-xl">🎯</div>
+                  <div>
+                    <div className="text-3xl font-extrabold text-slate-900 font-mono">—</div>
+                    <div className="text-xs font-semibold text-slate-500">Best band</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4 Core Module Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {[
+                  { title: 'Listening', sub: '4 recordings • 40 questions', icon: '🎧' },
+                  { title: 'Reading', sub: '3 passages • 40 questions', icon: '📖' },
+                  { title: 'Writing', sub: 'Task 1 report • Task 2 essay', icon: '✍️' },
+                  { title: 'Speaking', sub: 'Interview • Cue card • Discussion', icon: '🎙️' }
+                ].map((m, i) => (
+                  <div key={i} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-11 h-11 rounded-2xl bg-[#EBF2FE] text-[#2563EB] flex items-center justify-center text-lg">{m.icon}</div>
+                        <span className="text-lg font-black text-slate-700 font-mono">—</span>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900">{m.title}</h3>
+                      <p className="text-xs text-slate-500 mt-0.5">{m.sub}</p>
+                      <div className="mt-5 space-y-1.5">
+                        <div className="w-full bg-slate-100 rounded-full h-1.5"><div className="bg-[#2454B4] h-full rounded-full w-0"></div></div>
+                        <div className="text-[11px] text-slate-400">0 / 100 tests completed</div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-6">
+                      <button onClick={() => startTest(TEST_CATALOG[0], m.title.toLowerCase())} className="bg-[#2454B4] hover:bg-blue-800 text-white font-bold text-xs py-2.5 rounded-xl transition">
+                        Test 1
+                      </button>
+                      <button onClick={() => { setModuleFilter(m.title.toLowerCase()); setView('test-bank'); }} className="bg-white border border-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition">
+                        All tests
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 3 Features Cards (Image 3) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                <div className="bg-white rounded-3xl p-7 border border-slate-200 shadow-xs space-y-2">
+                  <div className="text-red-500 text-2xl font-bold">⏱️</div>
+                  <h4 className="font-bold text-slate-900 text-base">Real exam conditions</h4>
+                  <p className="text-xs text-slate-500">Countdown timers, question navigator and one-play audio — exactly like the computer-delivered test.</p>
+                </div>
+                <div className="bg-white rounded-3xl p-7 border border-slate-200 shadow-xs space-y-2">
+                  <div className="text-red-500 text-2xl font-bold">✨</div>
+                  <h4 className="font-bold text-slate-900 text-base">AI band analyser</h4>
+                  <p className="text-xs text-slate-500">Writing and Speaking are marked against the four official criteria, with corrections and Band 9 model answers.</p>
+                </div>
+                <div className="bg-white rounded-3xl p-7 border border-slate-200 shadow-xs space-y-2">
+                  <div className="text-red-500 text-2xl font-bold">📊</div>
+                  <h4 className="font-bold text-slate-900 text-base">Track your progress</h4>
+                  <p className="text-xs text-slate-500">See your band for every attempt, your estimated overall score and how you improve over time.</p>
+                </div>
+              </div>
+
+              {/* Bottom CTA (Image 3) */}
+              <div 
+                className="rounded-3xl p-8 sm:p-10 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6"
+                style={{
+                  backgroundColor: '#071746',
+                  backgroundImage: `linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+                  backgroundSize: '24px 24px'
+                }}
+              >
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-black">Ready for your target band?</h3>
+                  <p className="text-blue-100 text-xs">Create a free account and start Mock Test 1 in under a minute.</p>
+                </div>
+                <button onClick={() => startTest(TEST_CATALOG[0], 'reading')} className="bg-[#DC2626] hover:bg-red-700 text-white font-bold text-xs px-6 py-3 rounded-2xl shadow transition">
+                  Create free account →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* VIEW: EXAM WITH BACK & MODULE SWITCH OPTIONS */}
+          {view === 'exam' && (
+            <div className="flex-1 flex flex-col">
+              {/* Exam Header */}
+              <div className="bg-white border-b px-4 py-2.5 flex items-center justify-between sticky top-0 z-40 shadow-xs">
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setView('dashboard')} className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-xs text-slate-700 transition">
+                    ← Back to Dashboard
+                  </button>
+                  <span className="font-extrabold text-[#173F7A] text-sm">KRYPTON IELTS</span>
+                  <span className="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded font-bold">{currentTest.code}</span>
+                  <span className="text-[10px] bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded uppercase">{activeModuleInExam}</span>
+                </div>
+
+                {/* Sub-bar Module Switcher requested by user */}
+                <div className="flex items-center gap-1.5 text-xs font-bold">
+                  <button onClick={() => setActiveModuleInExam('listening')} className={`px-2.5 py-1 rounded-lg ${activeModuleInExam === 'listening' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>🎧 Listening</button>
+                  <button onClick={() => setActiveModuleInExam('reading')} className={`px-2.5 py-1 rounded-lg ${activeModuleInExam === 'reading' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}>📖 Reading</button>
+                  <button onClick={() => setActiveModuleInExam('writing')} className={`px-2.5 py-1 rounded-lg ${activeModuleInExam === 'writing' ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600'}`}>✍️ Writing</button>
+                  <button onClick={() => setActiveModuleInExam('speaking')} className={`px-2.5 py-1 rounded-lg ${activeModuleInExam === 'speaking' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600'}`}>🎙️ Speaking</button>
+                </div>
+
+                <button onClick={submitExam} className="bg-[#DC2626] hover:bg-red-700 text-white font-bold text-xs px-4 py-1.5 rounded-xl shadow">
+                  Submit & Get Bands
+                </button>
+              </div>
+
+              {/* Split-screen Test Interface */}
+              <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-125px)] overflow-hidden">
+                <div className="w-full md:w-1/2 overflow-y-auto p-6 md:p-8 bg-white border-r border-slate-200">
+                  <div className="max-w-xl mx-auto space-y-4">
+                    <span className="text-[10px] font-bold uppercase text-[#173F7A] bg-blue-50 px-2 py-0.5 rounded">
+                      Passage 1 (Barron's Practice Exam 1)
+                    </span>
+                    <h2 className="text-2xl font-black text-slate-900">{BARRON_TEST_1_PASSAGE.title}</h2>
+                    <p className="text-xs text-slate-500 italic">{BARRON_TEST_1_PASSAGE.subheading}</p>
+                    <div className="space-y-4 pt-2 font-serif text-sm leading-relaxed text-slate-800">
+                      {BARRON_TEST_1_PASSAGE.paragraphs.map((p, idx) => (
+                        <div key={idx} className="relative pl-6">
+                          <span className="absolute left-0 top-0.5 font-sans font-bold text-xs text-[#173F7A] font-mono">[{p.label}]</span>
+                          <p>{p.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full md:w-1/2 overflow-y-auto p-6 md:p-8 bg-slate-50">
+                  <div className="max-w-xl mx-auto space-y-5">
+                    <div className="text-xs font-bold text-slate-500 uppercase border-b pb-2">
+                      Questions 1 to 5 (Passage 1)
+                    </div>
+                    {BARRON_TEST_1_QUESTIONS.map((q) => (
+                      <div key={q.id} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="w-6 h-6 rounded-lg bg-[#173F7A] text-white font-mono font-bold text-xs flex items-center justify-center">{q.num}</span>
+                          <span className="text-[10px] uppercase font-bold text-slate-400">{q.type}</span>
+                        </div>
+                        <p className="text-xs font-semibold text-slate-800">{q.q}</p>
+                        <div className="space-y-1.5">
+                          {q.options.map((opt, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setAnswers({ ...answers, [q.id]: opt })}
+                              className={`w-full text-left p-2.5 rounded-xl text-xs font-medium border transition ${
+                                answers[q.id] === opt ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold' : 'border-slate-200 hover:bg-slate-50'
+                              }`}
+                            >
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* VIEW: RESULT SCORECARD */}
+          {view === 'result' && testResult && (
+            <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 flex-1">
+              <button onClick={() => setView('dashboard')} className="text-xs font-bold text-[#173F7A] hover:underline">
+                ← Return to Dashboard
+              </button>
+              <div id="printable-report" className="bg-white rounded-3xl p-8 border-2 border-slate-300 shadow-xl space-y-6">
+                <div className="border-b pb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <img src="public/krypton-logo.jpg" alt="Kathmandu Krypton" className="h-10 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    <div>
+                      <h2 className="text-lg font-black text-[#173F7A]">KATHMANDU KRYPTON EDUCATIONAL CONSULTANCY</h2>
+                      <p className="text-xs text-[#DC2626] font-bold">Putalisadak, Kathmandu • Official Diagnostic Score Report</p>
+                    </div>
+                  </div>
+                  <div className="text-right text-xs font-mono">{testResult.date}</div>
+                </div>
+
+                <div className="text-center p-6 bg-blue-50 rounded-2xl border border-blue-200 space-y-2">
+                  <div className="text-xs font-bold text-slate-500 uppercase">Predicted IELTS Band Score</div>
+                  <div className="text-6xl font-black text-[#173F7A] font-mono">{testResult.band.toFixed(1)}</div>
+                  <div className="text-xs text-slate-600 font-medium">Raw Score: {testResult.rawScore} / {testResult.total} Correct</div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-bold text-sm text-slate-900">Answer Key & Official Citations</h4>
+                  {BARRON_TEST_1_QUESTIONS.map((q) => (
+                    <div key={q.id} className="p-3 bg-slate-50 rounded-xl border text-xs space-y-1">
+                      <div className="flex justify-between font-bold">
+                        <span>Q{q.num}: {q.q}</span>
+                        <span className="text-emerald-700">Official Answer: {q.correct}</span>
+                      </div>
+                      <p className="text-slate-500 italic">Citation: {q.explanation}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-4 border-t flex justify-between items-center text-xs text-slate-500">
+                  <div>IELTS Faculty: Kushal Adhikari (9706462842) & Nirmal Thapa (Putalisadak Head Office)</div>
+                  <button onClick={() => window.print()} className="bg-[#173F7A] text-white font-bold px-4 py-2 rounded-xl">
+                    Print Official Certificate
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* VIEW: TEST BANK EXPLORER */}
+          {view === 'test-bank' && (
+            <div className="max-w-7xl mx-auto px-4 py-8 space-y-6 flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-black text-slate-900">100 Free IELTS Mock Tests</h1>
+                  <p className="text-xs text-slate-500">Barron's Official, Cambridge 14–19, British Council & IDP Exam Banks</p>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search by test # or topic..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="px-4 py-2 border rounded-xl text-xs w-64 bg-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {TEST_CATALOG
+                  .filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || String(t.id) === searchQuery)
+                  .slice(0, 18)
+                  .map((t) => (
+                    <div key={t.id} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-center text-xs font-mono font-bold text-[#173F7A] mb-1">
+                          <span>{t.code}</span>
+                          <span className="text-[10px] bg-indigo-50 text-indigo-700 px-2 rounded">{t.format}</span>
+                        </div>
+                        <h4 className="font-bold text-sm text-slate-900">{t.title}</h4>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {t.topics.map((tp, i) => (
+                            <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{tp}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => startTest(t, 'reading')}
+                        className="mt-4 w-full bg-[#173F7A] hover:bg-blue-900 text-white font-bold text-xs py-2 rounded-xl transition"
+                      >
+                        Start Test
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

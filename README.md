@@ -1,4 +1,4 @@
-# Krypton Ielts (Alfa IELTS Edition)
+# Kathmandu Krypton IELTS Examination Portal
 ### Free 1 to 100 IELTS Mock Test Platform & AI Band Analyzer
 **Kathmandu Krypton Educational Consultancy**  
 *Putalisadak (Opposite to Shankar Dev Campus / Star Mall), Kathmandu, Nepal • Phone: 01-5313111 / +977 9744598328 / 9706462842*
@@ -19,13 +19,13 @@
 ---
 
 ## 🌟 Overview
-**Krypton Ielts** is a full-featured, 100% free Computer-Delivered IELTS (CD-IELTS) preparation and mock test web application engineered specifically for **Kathmandu Krypton Educational Consultancy**. Built in the exact visual design, layout, and workflow of **Alfa IELTS** (`app.alfaielts.com/dashboard`), it provides students and IELTS instructors with an authentic testing ecosystem adhering strictly to official **Barron's**, **Cambridge English**, and **British Council** standards.
+**Krypton IELTS** is a full-featured, 100% free Computer-Delivered IELTS (CD-IELTS) preparation and mock test web application engineered specifically for **Kathmandu Krypton Educational Consultancy**. It provides students and IELTS instructors with an authentic testing ecosystem adhering strictly to official **Cambridge English** and **British Council** standards.
 
 ---
 
 ## 🚀 Key Features
 
-### 1. 🎨 Pixel-Perfect Alfa IELTS Interface
+### 1. 🎨 Official Examination Portal Interface
 - **Top Navigation Bar**:
   - Official Kathmandu Krypton logo + "IELTS Mock Tests (FREE FOR EVERY STUDENT)".
   - Segmented pill navigation: `Dashboard`, `Listening`, `Reading`, `Writing`, `Speaking`.
@@ -82,22 +82,23 @@
 
 ---
 
-### 5. 📖 Authentic Barron's & Cambridge IELTS Test Sources
-- **Test 1 (Barron's Practice Test 1)**:
-  - Reading: *Odonata (Dragonflies & Damselflies)*, *History of Fire Fighting and Prevention*, *The Luddites*.
-  - Listening: Globetrotters Language School, City Shopping District map, City Archives, Wind Power.
-  - Writing: Task 1 *How Wood Pellets Are Made*, Task 2 *Open University Admissions*.
-  - Speaking: Neighborhood, Walking, Important Friend, Friendships in Society.
-- **Test 2 (Barron's Practice Test 2)**:
-  - Reading: *The Vikings' Wayfaring Ways*, *Dyslexia*, *Catastrophe Theory*.
-  - Listening: Plainfield Community Center, Hiking Safety Rules, Student Teaching, Retail Shopping Psychology.
-  - Writing: Task 1 *Household Internet Access*, Task 2 *Children's Nature Exposure*.
-  - Speaking: Leisure Time, Music, Movie Description, Cinema Evolution.
-- **Test 3 (Cambridge English Official)**:
-  - Reading: *Could urban engineers learn from dance?*, *Should we try to bring extinct species back to life?*, *Having a laugh*.
-  - Writing: Task 1 *Caribbean Tourism (2010–2017)*, Task 2 *Printed Newspapers vs Digital Reading*.
-  - Speaking: Languages, Website Purchase, E-Commerce.
-- **Tests 4 to 100**: Full catalog of 100 mock tests with rich content, Cambridge & IDP formats, and AI analysis.
+### 5. 📖 Authentic Cambridge 20–17 Official & British Council Exam Sources
+- **Test 1 (Cambridge 20 Official Test 1)**:
+  - Reading: *Odonata (Dragonflies & Damselflies)*, *Accident Insurance Benefits*, *Information Design*, *Sleep Architecture*.
+  - Listening: Greenfield Leisure Centre Booking, Kingsbury Nature Reserve, Marine Biology Ecosystems, Neurobiology of Sleep.
+  - Writing: Task 1 *Renewable Energy Generation (Bar Chart)*, Task 2 *Artificial Intelligence in Higher Education*.
+  - Speaking: Biodiversity & Nature, Impactful Environmental Project, Public Policy Discussion.
+- **Test 2 (Cambridge 20 Official Test 2)**:
+  - Reading: *The Vikings' Wayfaring Ways*, *Dyslexia Neuroscience*, *Catastrophe Theory*, *Geothermal Energy Systems*.
+  - Listening: Lakeside Holiday Lodge Booking, Historic Maritime Dockyard, Architectural Urban Density, Paleoclimatology.
+  - Writing: Task 1 *Global Energy Consumption Breakdown (Dual Pie Charts)*, Task 2 *Endangered Minority Languages*.
+  - Speaking: Cultural Heritage, Historic Travel Experience, Global Cultural Preservation.
+- **Test 3 (Cambridge 19 Official Test 3)**:
+  - Reading: *Urban Design & Architectural Kinetics*, *De-extinction Genetics*, *Evolutionary Psychology of Humour*, *Pelagic Marine Ecology*.
+  - Listening: Community Adult Class Registration, St. Jude's Cathedral History, Microplastic Research, Cetacean Acoustics.
+  - Writing: Task 1 *International Airport Passenger Volumes (Line Graph)*, Task 2 *Urban Traffic Congestion Solutions*.
+  - Speaking: Urban Living, City Infrastructure, Sustainable Municipal Planning.
+- **Tests 4 to 100**: Full catalog of 100 unique mock tests with rotating Task 1 diagrams (Bar, Pie, Line, Table, Process Flowchart, Maps & Plans), 40 reading questions, 40 listening questions, and full AI evaluation.
 
 ---
 

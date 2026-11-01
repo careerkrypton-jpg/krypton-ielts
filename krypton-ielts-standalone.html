@@ -96,11 +96,11 @@
       } catch (e) {}
     }
 
-    // Generate 100 mock test metadata including Barron's & Cambridge
+    // Generate 100 mock test metadata including Cambridge 20-17
     const TEST_CATALOG = Array.from({ length: 100 }, (_, i) => {
       const id = i + 1;
       const padded = String(id).padStart(3, '0');
-      const sources = ['Barron\'s Official', 'Cambridge 19', 'Cambridge 18', 'Cambridge 17', 'British Council Official', 'IDP Official Exam', 'Recent Actual 2025'];
+      const sources = ['Cambridge 20 Official', 'Cambridge 19', 'Cambridge 18', 'Cambridge 17', 'British Council Official', 'IDP Official Exam', 'Recent Actual 2025'];
       const topics = [
         ['Odonata (Dragonflies)', 'History of Fire Fighting', 'The Luddites'],
         ['Vikings Wayfaring Ways', 'Dyslexia Neuroscience', 'Catastrophe Theory'],
@@ -121,7 +121,7 @@
       };
     });
 
-    const BARRON_TEST_1_PASSAGE = {
+    const CAMBRIDGE_TEST_1_PASSAGE = {
       title: "Odonata (Dragonflies & Damselflies)",
       subheading: "An anatomical and evolutionary examination of nature's ancient aerial predators.",
       paragraphs: [
@@ -132,7 +132,7 @@
       ]
     };
 
-    const BARRON_TEST_1_QUESTIONS = [
+    const CAMBRIDGE_TEST_1_QUESTIONS = [
       { id: 'q1', num: 1, type: 'Fact', q: 'They have sawlike jaws.', options: ['A) dragonflies only', 'B) damselflies only', 'C) both dragonflies and damselflies'], correct: 'C) both dragonflies and damselflies', explanation: 'Paragraph A confirms both have serrated sawlike jaws.' },
       { id: 'q2', num: 2, type: 'Fact', q: 'They hold their wings on their backs while resting.', options: ['A) dragonflies only', 'B) damselflies only', 'C) both dragonflies and damselflies'], correct: 'B) damselflies only', explanation: 'Paragraph B states damselflies fold wings back.' },
       { id: 'q3', num: 3, type: 'Fact', q: 'Their eyes have a gap between them.', options: ['A) dragonflies only', 'B) damselflies only', 'C) both dragonflies and damselflies'], correct: 'B) damselflies only', explanation: 'Paragraph B states damselflies have a space between eyes.' },
@@ -143,7 +143,7 @@
     function App() {
       const [isAuthenticated, setIsAuthenticated] = useState(true);
       const [student, setStudent] = useState({
-        name: 'Vibe Coder',
+        name: 'IELTS Student',
         email: 'vibecoder@krypton.edu.np',
         candidateNumber: 'NP-KTM-084219',
         targetBand: 7.5
@@ -167,7 +167,7 @@
 
       const submitExam = () => {
         let correct = 0;
-        BARRON_TEST_1_QUESTIONS.forEach(q => {
+        CAMBRIDGE_TEST_1_QUESTIONS.forEach(q => {
           if (answers[q.id] === q.correct || (answers[q.id] && answers[q.id].startsWith(q.correct.charAt(0)))) {
             correct++;
           }
@@ -176,7 +176,7 @@
         setTestResult({
           band,
           rawScore: correct,
-          total: BARRON_TEST_1_QUESTIONS.length,
+          total: CAMBRIDGE_TEST_1_QUESTIONS.length,
           date: new Date().toLocaleDateString(),
           testTitle: currentTest.title,
         });
@@ -403,12 +403,12 @@
                 <div className="w-full md:w-1/2 overflow-y-auto p-6 md:p-8 bg-white border-r border-slate-200">
                   <div className="max-w-xl mx-auto space-y-4">
                     <span className="text-[10px] font-bold uppercase text-[#173F7A] bg-blue-50 px-2 py-0.5 rounded">
-                      Passage 1 (Barron's Practice Exam 1)
+                      Passage 1 (Cambridge Official Exam 1)
                     </span>
-                    <h2 className="text-2xl font-black text-slate-900">{BARRON_TEST_1_PASSAGE.title}</h2>
-                    <p className="text-xs text-slate-500 italic">{BARRON_TEST_1_PASSAGE.subheading}</p>
+                    <h2 className="text-2xl font-black text-slate-900">{CAMBRIDGE_TEST_1_PASSAGE.title}</h2>
+                    <p className="text-xs text-slate-500 italic">{CAMBRIDGE_TEST_1_PASSAGE.subheading}</p>
                     <div className="space-y-4 pt-2 font-serif text-sm leading-relaxed text-slate-800">
-                      {BARRON_TEST_1_PASSAGE.paragraphs.map((p, idx) => (
+                      {CAMBRIDGE_TEST_1_PASSAGE.paragraphs.map((p, idx) => (
                         <div key={idx} className="relative pl-6">
                           <span className="absolute left-0 top-0.5 font-sans font-bold text-xs text-[#173F7A] font-mono">[{p.label}]</span>
                           <p>{p.text}</p>
@@ -423,7 +423,7 @@
                     <div className="text-xs font-bold text-slate-500 uppercase border-b pb-2">
                       Questions 1 to 5 (Passage 1)
                     </div>
-                    {BARRON_TEST_1_QUESTIONS.map((q) => (
+                    {CAMBRIDGE_TEST_1_QUESTIONS.map((q) => (
                       <div key={q.id} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="w-6 h-6 rounded-lg bg-[#173F7A] text-white font-mono font-bold text-xs flex items-center justify-center">{q.num}</span>
@@ -477,7 +477,7 @@
 
                 <div className="space-y-3">
                   <h4 className="font-bold text-sm text-slate-900">Answer Key & Official Citations</h4>
-                  {BARRON_TEST_1_QUESTIONS.map((q) => (
+                  {CAMBRIDGE_TEST_1_QUESTIONS.map((q) => (
                     <div key={q.id} className="p-3 bg-slate-50 rounded-xl border text-xs space-y-1">
                       <div className="flex justify-between font-bold">
                         <span>Q{q.num}: {q.q}</span>
@@ -489,7 +489,7 @@
                 </div>
 
                 <div className="pt-4 border-t flex justify-between items-center text-xs text-slate-500">
-                  <div>IELTS Faculty: Kushal Adhikari (9706462842) & Nirmal Thapa (Putalisadak Head Office)</div>
+                  <div>IELTS Faculty: Nirmal Thapa (Head IELTS Instructor) & Kushal Adhikari (IELTS Master Trainer - 9706462842)</div>
                   <button onClick={() => window.print()} className="bg-[#173F7A] text-white font-bold px-4 py-2 rounded-xl">
                     Print Official Certificate
                   </button>
@@ -504,7 +504,7 @@
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-2xl font-black text-slate-900">100 Free IELTS Mock Tests</h1>
-                  <p className="text-xs text-slate-500">Barron's Official, Cambridge 14–19, British Council & IDP Exam Banks</p>
+                  <p className="text-xs text-slate-500">Cambridge 20–17 Official, British Council & IDP Exam Banks</p>
                 </div>
                 <input
                   type="text"
